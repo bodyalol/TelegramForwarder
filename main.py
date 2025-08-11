@@ -1,6 +1,6 @@
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters.command import Command
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.exceptions import TelegramAPIError
 import logging
 import os
@@ -30,6 +30,15 @@ except (ValueError, TypeError):
 # Инициализация бота и диспетчера
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
+
+# Клавиатура для старта
+start_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="📤 Отправить квитанцию")],
+        [KeyboardButton(text="ℹ️ Статус оплаты")]
+    ],
+    resize_keyboard=True
+)
 
 @dp.message(F.photo)
 async def handle_photo(message: Message):
@@ -89,7 +98,18 @@ async def handle_start_help(message: Message):
         "/start - Начать\n"
         "/help - Помощь и инструкция"
     )
-    await message.reply(welcome_text)
+    await message.reply(welcome_text, reply_markup=start_keyboard)
+
+@dp.message(F.text == "📤 Отправить квитанцию")
+async def request_receipt(message: Message):
+    """Реакция на кнопку 'Отправить квитанцию'."""
+    await message.reply("Пришлите фото или скриншот вашей квитанции 🖼")
+
+@dp.message(F.text == "ℹ️ Статус оплаты")
+async def payment_status(message: Message):
+    """Реакция на кнопку 'Статус оплаты'."""
+    # Тут можно подключить реальную проверку платежей
+    await message.reply("Ваш платёж находится в обработке ⏳\nМы уведомим вас, как только он будет подтверждён ✅")
 
 @dp.message()
 async def handle_other(message: Message):
