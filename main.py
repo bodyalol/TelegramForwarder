@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 # Переменные окружения
 TOKEN = os.getenv("BOT_TOKEN")
 FORWARD_CHAT_ID = os.getenv("FORWARD_CHAT_ID")
+OWNER_ID = 469513728  # твій user_id
 
 if not TOKEN:
     logger.error("BOT_TOKEN не задан в переменных окружения!")
@@ -28,7 +29,7 @@ except (ValueError, TypeError):
     exit(1)
 
 # Память статусов пользователей
-user_payment_status = {}  # user_id: "no_photo", "processing", "confirmed"
+user_payment_status = {}
 
 # Клавиатура
 main_keyboard = ReplyKeyboardMarkup(
@@ -43,13 +44,16 @@ main_keyboard = ReplyKeyboardMarkup(
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Фильтр для запрета работы в чужих чатах
-async def check_chat_allowed(message: Message) -> bool:
-    return message.chat.type == "private" or message.chat.id == FORWARD_CHAT_ID
+# Фильтр: только разрешенные пользователи или канал
+def is_allowed_user(message: Message):
+    # Разрешаем:
+    # - владельцу
+    # - пользователям, которые пишут в чате FORWARD_CHAT_ID (твой канал/группа)
+    return message.from_user.id == OWNER_ID or message.chat.id == FORWARD_CHAT_ID
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
-    if not await check_chat_allowed(message):
+    if not is_allowed_user(message):
         return
     user_payment_status[message.from_user.id] = "no_photo"
     await message.reply(
@@ -61,13 +65,13 @@ async def cmd_start(message: Message):
 
 @dp.message(F.text == "📤 Отправить квитанцию")
 async def ask_for_photo(message: Message):
-    if not await check_chat_allowed(message):
+    if not is_allowed_user(message):
         return
     await message.reply("Отправьте фото или скриншот квитанции 📸")
 
 @dp.message(F.photo)
 async def handle_photo(message: Message):
-    if not await check_chat_allowed(message):
+    if not is_allowed_user(message):
         return
     user_payment_status[message.from_user.id] = "processing"
     await message.reply("Спасибо! Я получил скриншот! Ожидайте ответа оператора. ⏳")
@@ -84,7 +88,7 @@ async def handle_photo(message: Message):
 
 @dp.message(F.text == "ℹ️ Статус оплаты")
 async def check_status(message: Message):
-    if not await check_chat_allowed(message):
+    if not is_allowed_user(message):
         return
     status = user_payment_status.get(message.from_user.id, "no_photo")
     if status == "no_photo":
@@ -98,7 +102,7 @@ async def check_status(message: Message):
 
 @dp.message()
 async def handle_other(message: Message):
-    if not await check_chat_allowed(message):
+    if not is_allowed_user(message):
         return
     await message.reply("Пожалуйста, используйте кнопки ниже ⬇️", reply_markup=main_keyboard)
 
