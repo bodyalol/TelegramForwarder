@@ -14,11 +14,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Для тестування використовуємо наданий токен
-TOKEN = "8422633253:AAEYmPqmyFGe4-KmB4RJMTPYSzcMltmqAOc"
-
-# Chat ID для пересилання повідомлень - потрібно буде налаштувати
-FORWARD_CHAT_ID = os.getenv("FORWARD_CHAT_ID", "-1001234567890")
+TOKEN = os.getenv("BOT_TOKEN")
+FORWARD_CHAT_ID = int(os.getenv("FORWARD_CHAT_ID"))
 
 try:
     FORWARD_CHAT_ID = int(FORWARD_CHAT_ID)
