@@ -8,7 +8,7 @@ from keep_alive import keep_alive
 
 # Налаштування токена - використовуємо наданий токен
 TOKEN = "8422633253:AAEYmPqmyFGe4-KmB4RJMTPYSzcMltmqAOc"
-FORWARD_CHAT_ID = -1001234567890  # chat_id куди пересилати фото
+FORWARD_CHAT_ID = -1002818055316  # chat_id куди пересилати фото
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
