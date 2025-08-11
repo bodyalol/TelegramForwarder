@@ -1,6 +1,12 @@
 # Overview
 
-This is a Ukrainian Telegram bot that receives screenshot photos from users, responds with thanks in Ukrainian, and forwards the images to a designated chat or channel. The bot runs 24/7 on Replit using a keep-alive mechanism and is designed to handle photo messages while encouraging users to send screenshots for other message types.
+This is a Ukrainian Telegram bot (@gameunlocker_bot) that receives screenshot photos from users, responds with thanks in Ukrainian, and forwards the images to a designated chat or channel. The bot runs 24/7 on Replit using a keep-alive mechanism and is designed to handle photo messages while encouraging users to send screenshots for other message types.
+
+**Status**: ✅ LIVE AND WORKING
+- Bot Token: 8422633253:AAEYmPqmyFGe4-KmB4RJMTPYSzcMltmqAOc  
+- Forward Chat ID: -1002818055316
+- Successfully tested with real users (bprkf, Naz_ads)
+- Deployed: August 11, 2025
 
 # User Preferences
 
