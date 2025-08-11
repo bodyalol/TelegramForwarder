@@ -23,7 +23,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install aiogram flask && python main.py"
+args = "python simple_bot.py"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
