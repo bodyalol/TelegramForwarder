@@ -43,8 +43,14 @@ main_keyboard = ReplyKeyboardMarkup(
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
+# Фильтр для запрета работы в чужих чатах
+async def check_chat_allowed(message: Message) -> bool:
+    return message.chat.type == "private" or message.chat.id == FORWARD_CHAT_ID
+
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
+    if not await check_chat_allowed(message):
+        return
     user_payment_status[message.from_user.id] = "no_photo"
     await message.reply(
         "Привет! 👋\n"
@@ -55,10 +61,14 @@ async def cmd_start(message: Message):
 
 @dp.message(F.text == "📤 Отправить квитанцию")
 async def ask_for_photo(message: Message):
+    if not await check_chat_allowed(message):
+        return
     await message.reply("Отправьте фото или скриншот квитанции 📸")
 
 @dp.message(F.photo)
 async def handle_photo(message: Message):
+    if not await check_chat_allowed(message):
+        return
     user_payment_status[message.from_user.id] = "processing"
     await message.reply("Спасибо! Я получил скриншот! Ожидайте ответа оператора. ⏳")
     logger.info(f"Получено фото от {message.from_user.id} (@{message.from_user.username})")
@@ -74,6 +84,8 @@ async def handle_photo(message: Message):
 
 @dp.message(F.text == "ℹ️ Статус оплаты")
 async def check_status(message: Message):
+    if not await check_chat_allowed(message):
+        return
     status = user_payment_status.get(message.from_user.id, "no_photo")
     if status == "no_photo":
         await message.reply("Вы ещё не отправили квитанцию 📸")
@@ -86,6 +98,8 @@ async def check_status(message: Message):
 
 @dp.message()
 async def handle_other(message: Message):
+    if not await check_chat_allowed(message):
+        return
     await message.reply("Пожалуйста, используйте кнопки ниже ⬇️", reply_markup=main_keyboard)
 
 async def main():
