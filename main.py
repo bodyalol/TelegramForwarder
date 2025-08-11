@@ -44,12 +44,16 @@ main_keyboard = ReplyKeyboardMarkup(
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Фильтр: только разрешенные пользователи или канал
+# Фильтр: кто может пользоваться ботом
 def is_allowed_user(message: Message):
-    # Разрешаем:
-    # - владельцу
-    # - пользователям, которые пишут в чате FORWARD_CHAT_ID (твой канал/группа)
-    return message.from_user.id == OWNER_ID or message.chat.id == FORWARD_CHAT_ID
+    # Дозволяємо приватні чати від будь-кого
+    if message.chat.type == "private":
+        return True
+    # Дозволяємо лише твій канал/групу
+    if message.chat.id == FORWARD_CHAT_ID:
+        return True
+    # Все інше блокуємо
+    return False
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
