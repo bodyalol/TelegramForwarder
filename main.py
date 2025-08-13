@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 TOKEN = os.getenv("BOT_TOKEN")
 FORWARD_CHAT_ID = os.getenv("FORWARD_CHAT_ID")
 OWNER_ID = 469513728  # твій user_id
+SUPPORT_USERNAME = "@papaplaynet"  # ник техподдержки
 
 if not TOKEN:
     logger.error("BOT_TOKEN не задан в переменных окружения!")
@@ -35,7 +36,8 @@ user_payment_status = {}
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="📤 Отправить квитанцию")],
-        [KeyboardButton(text="ℹ️ Статус оплаты")]
+        [KeyboardButton(text="ℹ️ Статус оплаты")],
+        [KeyboardButton(text="🛠 Поддержка")]  # новая кнопка
     ],
     resize_keyboard=True
 )
@@ -46,13 +48,10 @@ dp = Dispatcher()
 
 # Фильтр: кто может пользоваться ботом
 def is_allowed_user(message: Message):
-    # Дозволяємо приватні чати від будь-кого
     if message.chat.type == "private":
         return True
-    # Дозволяємо лише твій канал/групу
     if message.chat.id == FORWARD_CHAT_ID:
         return True
-    # Все інше блокуємо
     return False
 
 @dp.message(Command("start"))
@@ -103,6 +102,12 @@ async def check_status(message: Message):
         await message.reply("✅ Ваш платёж подтверждён! Ожидайте ссылку на игру.")
     else:
         await message.reply("Неизвестный статус. Отправьте квитанцию ещё раз.")
+
+@dp.message(F.text == "🛠 Поддержка")
+async def show_support(message: Message):
+    if not is_allowed_user(message):
+        return
+    await message.reply(f"Связаться с техподдержкой: {SUPPORT_USERNAME}")
 
 @dp.message()
 async def handle_other(message: Message):
